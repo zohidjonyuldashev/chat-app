@@ -1,0 +1,54 @@
+services:
+  postgres:
+    container_name: postgres-sql-chat
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: chatApp_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - chat-app-net
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    container_name: keycloak-chat
+    ports:
+      - "9090:8080"
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: keycloak_db
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: 1234
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+    depends_on:
+      - postgres
+    networks:
+      - chat-app-net
+    command:
+      - "start-dev"
+    restart: unless-stopped
+
+  angular-app:
+    image: angular-app:1.0
+    ports:
+      - "4200:80" # Angularni tashqi port orqali ishlatish
+    volumes:
+      - ./src:/usr/share/nginx/html/src # Hot-reload maqsadida (agar kerak bo'lsa)
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  chat-app-net:
+    driver: bridge

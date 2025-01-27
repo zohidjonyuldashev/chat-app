@@ -1,0 +1,130 @@
+<div class="main">
+  <div class="background-green"></div>
+
+  <div class="main-container d-flex">
+    <div class="d-flex flex-column justify-content-between align-items-center p-3 gray-bg">
+      <div>
+        <i class="fa-solid fa-message"></i>
+      </div>
+      <div class="d-flex flex-column align-items-center gap-2">
+        <i class="fa-solid fa-user cursor-pointer" (click)="userProfile()"></i>
+        <i class="fa-solid fa-door-open cursor-pointer" (click)="logout()"></i>
+      </div>
+    </div>
+    <div class="d-flex w-100">
+      <div class="col-3 overflow-x-scroll">
+        <app-chat-list
+          [chats]="chats"
+          (chatSelected)="chatSelected($event)"
+        ></app-chat-list>
+      </div>
+      @if (selectedChat.id) {
+        <div class="col-9">
+          <div class="d-flex flex-column justify-content-between h-100">
+            <div class="gray-bg p-2">
+              <div class="d-flex gap-2">
+                <div class="user-img">
+                  <img src="user.png" alt="">
+                </div>
+                @if (selectedChat) {
+                  <div class="d-flex flex-column">
+                    <span>{{ selectedChat.name }}</span>
+                    <div class="d-flex gap-1 align-items-center">
+                      @if (selectedChat.recipientOnline) {
+                        <small class="online-status"></small>
+                        <small>Online</small>
+                      } @else {
+                        <small class="offline-status"></small>
+                        <small>Offline</small>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+            <div #scrollableDiv class="h-100 bg-chat p-3 overflow-x-scroll">
+              @for (message of chatMessages; track message) {
+                @if (isSelfMessage(message)) {
+                  <div class="message-box self">
+                    <div class="d-flex flex-column">
+                      @if (message.type === 'TEXT') {
+                        <span>{{ message.content }}</span>
+                      } @else if (message.media) {
+                        <img width="200" class="cursor-pointer" [src]="'data:image/jpg;base64,' + message.media" alt="">
+                      }
+                      <small class="text-black-50">
+                        {{ message.createdAt | date:'HH:mm' }}&nbsp;
+                        @if (message.state === 'SENT') {
+                          <span>
+                          <i class="fas fa-check seen"></i>
+                        </span>
+                        } @else {
+                          <span>
+                          <i class="fas fa-check seen"></i>
+                          <i class="fas fa-check seen ml-neg"></i>
+                        </span>
+                        }
+                      </small>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="message-box friend">
+                    <div class="d-flex flex-column align-items-end">
+                      @if (message.type === 'TEXT') {
+                        <span>{{ message.content }}</span>
+                      } @else if (message.media) {
+                        <img width="200" class="cursor-pointer" [src]="'data:image/jpg;base64,' + message.media" alt="">
+                      }
+                      <small class="text-black-50">{{ message.createdAt | date:'HH:mm' }}</small>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+            <div class="gray-bg p-2">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-paperclip cursor-pointer"
+                   (click)="inputFile.click()"></i>
+                <input
+                  #inputFile
+                  type="file"
+                  [hidden]="true"
+                  accept=".jpg, .jpeg,.png,.svg,.mp4,.mov,.mp3"
+                  (change)="uploadMedia($event.target)"
+                >
+                <i class="fa-regular fa-face-smile cursor-pointer" (click)="showEmojis = !showEmojis"></i>
+                @if (showEmojis) {
+                  <emoji-mart
+                    [set]="'google'"
+                    title="Pick your emoji.."
+                    emoji="smile"
+                    class="emojis-panel"
+                    (emojiClick)="onSelectEmojis($event)"
+                  ></emoji-mart>
+                }
+                <input type="text"
+                       class="form-control-sm w-100"
+                       placeholder="Type a message"
+                       [(ngModel)]="messageContent"
+                       (keydown)="keyDown($event)"
+                       (click)="onClick()"
+                >
+                @if (messageContent) {
+                  <i class="fa-solid fa-paper-plane cursor-pointer" (click)="sendMessage()"></i>
+                } @else {
+                  <i class="fa-solid fa-microphone cursor-pointer"></i>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 bg-chat ">
+          <img width="300" src="wa_banner.png" alt="">
+          <h2 class="text-black-50">Chat Apllication By Zohidjon</h2>
+          <p class="text-black-50"></p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
