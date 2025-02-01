@@ -36,15 +36,6 @@ services:
       - "start-dev"
     restart: unless-stopped
 
-  angular-app:
-    image: angular-app:1.0
-    ports:
-      - "4200:80" # Angularni tashqi port orqali ishlatish
-    volumes:
-      - ./src:/usr/share/nginx/html/src # Hot-reload maqsadida (agar kerak bo'lsa)
-    stdin_open: true
-    tty: true
-
 volumes:
   postgres-data:
     driver: local
