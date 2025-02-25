@@ -22,7 +22,6 @@ This is a real-time chat application that enables seamless communication between
 - Spring WebSocket
 - Spring Security (OAuth2 Client)
 - Spring Data JPA
-- Flyway
 - PostgreSQL
 - Maven
 - Docker
